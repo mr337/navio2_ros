@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+import rospy
+
+from navio2_ros.msg import RCIn
+
+from navio2_ros.navio.pwm import PWM
+
+
+def callback(msg):
+    for ch, val in enumerate(msg.channels):
+        pwm = PWM(ch)
+        pwm.set_period(50)
+        if val > 1960:
+            val = 1960
+        if val < 1024:
+            val = 1024
+        pwm.set_duty_cycle(val/1000.0)
+
+rospy.init_node('rcoutput')
+sub = rospy.Subscriber('rcoutput', RCIn, callback)
+
+rospy.spin()

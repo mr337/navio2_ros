@@ -1,0 +1,31 @@
+#!/usr/bin/env python
+
+from navio2_ros.navio import rcinput
+from navio2_ros.navio import util
+import rospy
+
+from navio2_ros.msg import RCIn
+rospy.init_node('rcinput')
+pub = rospy.Publisher('rcinput', RCIn, queue_size=2)
+
+rate = rospy.Rate(20)
+
+rcin = rcinput.RCInput()
+
+while not rospy.is_shutdown():
+    rc_input = RCIn()
+
+    rc_input.channels = (
+         int(rcin.read(0)),
+         int(rcin.read(1)),
+         int(rcin.read(2)),
+         int(rcin.read(3)),
+         int(rcin.read(4)),
+         int(rcin.read(5)),
+         int(rcin.read(6)),
+         int(rcin.read(7)),
+         int(rcin.read(8)))
+
+    rc_input.header.stamp = rospy.Time.now()
+    pub.publish(rc_input)
+    rate.sleep()
